@@ -4,7 +4,9 @@ namespace TindaTrackAPI.Models
 {
     public class Item
     {
-        [Key]
+        public int Id { get; set; }
+
+        [Required]
         public required string ItemCode { get; set; }
 
         [Required]
