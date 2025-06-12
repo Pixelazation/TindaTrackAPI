@@ -1,0 +1,6 @@
+@TindaTrackAPI_HostAddress = http://localhost:5089
+
+GET {{TindaTrackAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

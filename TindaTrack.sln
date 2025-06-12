@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36202.13 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TindaTrackAPI", "TindaTrackAPI\TindaTrackAPI.csproj", "{0416C33C-ABA8-44C7-868F-9FB809275D08}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0416C33C-ABA8-44C7-868F-9FB809275D08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0416C33C-ABA8-44C7-868F-9FB809275D08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0416C33C-ABA8-44C7-868F-9FB809275D08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0416C33C-ABA8-44C7-868F-9FB809275D08}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C39DC872-E7C6-4AE0-B434-8F908D4E6BE2}
+	EndGlobalSection
+EndGlobal
