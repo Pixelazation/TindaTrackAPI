@@ -16,6 +16,9 @@ namespace TindaTrackAPI.Models
         [Required]
         public required string Description { get; set; }
 
+        [Required]
+        public required int UnitPrice { get; set; } // stored in cents
+
         public required ICollection<Sale> Sales { get; set; }
     }
 
