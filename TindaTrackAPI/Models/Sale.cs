@@ -24,16 +24,12 @@ namespace TindaTrackAPI.Models
         public decimal TotalAmount => Quantity * UnitPrice;
 
         [Required]
-        public string Barangay { get; set; } = string.Empty;
-
-        [Required]
-        public string Municipality { get; set; } = string.Empty;
+        public int BarangayId { get; set; }
 
         // Navigation properties
-        [Required]
-        public Salesman Salesman { get; set; } = null!;
+        public required Salesman Salesman { get; set; }
 
-        [Required]
-        public Item Item { get; set; } = null!;
+        public required Item Item { get; set; }
+        public required Barangay Barangay { get; set; }
     }
 }

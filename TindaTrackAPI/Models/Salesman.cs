@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TindaTrackAPI.Models
 {
@@ -13,7 +14,6 @@ namespace TindaTrackAPI.Models
         public required string LastName { get; set; }
 
         // Navigation
-        [Required]
         public required ICollection<Sale> Sales { get; set; }
     }
 
