@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace TindaTrackAPI.Models
@@ -17,7 +18,9 @@ namespace TindaTrackAPI.Models
         public required string Description { get; set; }
 
         [Required]
-        public required int UnitPrice { get; set; } // stored in cents
+        [Precision(18, 2)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Value must be positive.")]
+        public required decimal UnitPrice { get; set; }
 
         public required ICollection<Sale> Sales { get; set; }
     }

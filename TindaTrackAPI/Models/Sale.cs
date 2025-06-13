@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace TindaTrackAPI.Models
 {
@@ -19,6 +20,8 @@ namespace TindaTrackAPI.Models
         public int Quantity { get; set; }  // stored in pcs
 
         [Required]
+        [Precision(18, 2)]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Value must be positive.")]
         public decimal UnitPrice { get; set; }
 
         public decimal TotalAmount => Quantity * UnitPrice;
