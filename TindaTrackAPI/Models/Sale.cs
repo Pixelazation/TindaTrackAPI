@@ -30,9 +30,8 @@ namespace TindaTrackAPI.Models
         public int BarangayId { get; set; }
 
         // Navigation properties
-        public required Salesman Salesman { get; set; }
-
-        public required Item Item { get; set; }
-        public required Barangay Barangay { get; set; }
+        public Salesman Salesman { get; set; } = null!;
+        public Item Item { get; set; } = null!;
+        public Barangay Barangay { get; set; } = null!;
     }
 }

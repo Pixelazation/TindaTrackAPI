@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Humanizer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.Models;
 
 namespace TindaTrackAPI.Controllers
@@ -22,36 +24,51 @@ namespace TindaTrackAPI.Controllers
 
         // GET: api/Items
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Item>>> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> GetItems()
         {
-            return await _context.Items.ToListAsync();
+            var items = await _context.Items
+            .Select(item => new ItemDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                UnitPrice = item.UnitPrice
+            })
+            .ToListAsync();
+
+            return Ok(items);
         }
 
         // GET: api/Items/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Item>> GetItem(int id)
+        public async Task<ActionResult<ItemDto>> GetItem(int id)
         {
             var item = await _context.Items.FindAsync(id);
 
-            if (item == null)
-            {
-                return NotFound();
-            }
+            if (item == null) return NotFound();
 
-            return item;
+            var dto = new ItemDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                UnitPrice = item.UnitPrice
+            };
+
+            return Ok(dto);
         }
 
         // PUT: api/Items/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutItem(int id, Item item)
+        public async Task<IActionResult> PutItem(int id, CreateItemDto dto)
         {
-            if (id != item.Id)
-            {
-                return BadRequest();
-            }
+            var item = await _context.Items.FindAsync(id);
+            if (item == null) return NotFound();
 
-            _context.Entry(item).State = EntityState.Modified;
+            item.Name = dto.Name;
+            item.UnitPrice = dto.UnitPrice;
+            item.ItemCode = dto.ItemCode;
+            item.Description = dto.Description;
 
             try
             {
@@ -59,14 +76,10 @@ namespace TindaTrackAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ItemExists(id))
-                {
+                if (ItemExists(id))
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
@@ -75,12 +88,29 @@ namespace TindaTrackAPI.Controllers
         // POST: api/Items
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Item>> PostItem(Item item)
+        public async Task<ActionResult<ItemDto>> PostItem(CreateItemDto dto)
         {
+            var item = new Item
+            {
+                Name = dto.Name,
+                UnitPrice = dto.UnitPrice,
+                ItemCode = dto.ItemCode,
+                Description = dto.Description,
+            };
+
             _context.Items.Add(item);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetItem", new { id = item.Id }, item);
+            var resultDto = new ItemDto
+            {
+                Id = item.Id,
+                Name = item.Name,
+                UnitPrice = item.UnitPrice,
+                ItemCode = item.ItemCode,
+                Description = item.Description,
+            };
+
+            return CreatedAtAction(nameof(GetItem), new { id = item.Id }, resultDto);
         }
 
         // DELETE: api/Items/5
