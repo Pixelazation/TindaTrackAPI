@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TindaTrackAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,15 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<TindaTrackContext>();
+    context.Database.Migrate(); // apply migrations
+    DataSeeder.Seed(context);   // seeding method
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
