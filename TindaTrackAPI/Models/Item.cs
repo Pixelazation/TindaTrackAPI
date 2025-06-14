@@ -22,7 +22,7 @@ namespace TindaTrackAPI.Models
         [Range(0.01, double.MaxValue, ErrorMessage = "Value must be positive.")]
         public required decimal UnitPrice { get; set; }
 
-        public ICollection<Sale> Sales { get; set; } = new List<Sale>();
+        public ICollection<Sale> Sales { get; set; } = null!;
     }
 
 }

@@ -20,7 +20,7 @@ namespace TindaTrackAPI.Models
 
         public required Municipality Municipality { get; set; }
 
-        public ICollection<Sale> Sales { get; set; }
+        public ICollection<Sale> Sales { get; set; } = null!;
     }
 
 }

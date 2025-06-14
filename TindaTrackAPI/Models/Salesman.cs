@@ -14,7 +14,7 @@ namespace TindaTrackAPI.Models
         public required string LastName { get; set; }
 
         // Navigation
-        public required ICollection<Sale> Sales { get; set; }
+        public ICollection<Sale> Sales { get; set; } = null!;
     }
 
 }
