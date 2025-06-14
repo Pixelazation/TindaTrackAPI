@@ -10,10 +10,6 @@ namespace TindaTrackAPI.Models
         [Required]
         public required string Name { get; set; }
 
-        [Required]
-        [Column(TypeName = "json")]
-        public required string GeoJsonBoundary { get; set; }
-
         public ICollection<Barangay> Barangays { get; set; } = null!;
     }
 }

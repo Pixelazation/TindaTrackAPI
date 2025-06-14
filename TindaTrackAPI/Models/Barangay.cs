@@ -12,13 +12,9 @@ namespace TindaTrackAPI.Models
         public required string Name { get; set; }
 
         [Required]
-        [Column(TypeName = "json")]
-        public required string GeoJsonBoundary { get; set; }
-
-        [Required]
         public int MunicipalityId { get; set; }
 
-        public required Municipality Municipality { get; set; }
+        public Municipality Municipality { get; set; } = null!;
 
         public ICollection<Sale> Sales { get; set; } = null!;
     }
