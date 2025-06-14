@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using TindaTrackAPI.DTOs.Item;
+using TindaTrackAPI.DTOs.Salesman;
 using TindaTrackAPI.Models;
 
 namespace TindaTrackAPI.Controllers
@@ -22,14 +25,23 @@ namespace TindaTrackAPI.Controllers
 
         // GET: api/Salesmen
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Salesman>>> GetSalesmen()
+        public async Task<ActionResult<IEnumerable<SalesmanDto>>> GetSalesmen()
         {
-            return await _context.Salesmen.ToListAsync();
+            var salesmen = await _context.Salesmen
+            .Select(salesman => new SalesmanDto
+            {
+                Id = salesman.Id,
+                FirstName = salesman.FirstName,
+                LastName = salesman.LastName
+            })
+            .ToListAsync();
+
+            return Ok(salesmen);
         }
 
         // GET: api/Salesmen/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Salesman>> GetSalesman(int id)
+        public async Task<ActionResult<SalesmanDto>> GetSalesman(int id)
         {
             var salesman = await _context.Salesmen.FindAsync(id);
 
@@ -38,20 +50,26 @@ namespace TindaTrackAPI.Controllers
                 return NotFound();
             }
 
-            return salesman;
+            var dto = new SalesmanDto
+            {
+                Id = salesman.Id,
+                FirstName = salesman.FirstName,
+                LastName = salesman.LastName
+            };  
+
+            return Ok(dto);
         }
 
         // PUT: api/Salesmen/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSalesman(int id, Salesman salesman)
+        public async Task<IActionResult> PutSalesman(int id, CreateSalesmanDto dto)
         {
-            if (id != salesman.Id)
-            {
-                return BadRequest();
-            }
+            var salesman = await _context.Salesmen.FindAsync(id);
+            if (salesman == null) return NotFound();
 
-            _context.Entry(salesman).State = EntityState.Modified;
+            salesman.FirstName = dto.FirstName;
+            salesman.LastName = dto.LastName;
 
             try
             {
@@ -75,12 +93,25 @@ namespace TindaTrackAPI.Controllers
         // POST: api/Salesmen
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Salesman>> PostSalesman(Salesman salesman)
+        public async Task<ActionResult<SalesmanDto>> PostSalesman(CreateSalesmanDto dto)
         {
+            var salesman = new Salesman
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName
+            };
+
             _context.Salesmen.Add(salesman);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSalesman", new { id = salesman.Id }, salesman);
+            var resultDto = new SalesmanDto
+            {
+                Id = salesman.Id,
+                FirstName = salesman.FirstName,
+                LastName = salesman.LastName
+            };  
+
+            return CreatedAtAction(nameof(GetSalesman), new { id = salesman.Id }, salesman);
         }
 
         // DELETE: api/Salesmen/5
