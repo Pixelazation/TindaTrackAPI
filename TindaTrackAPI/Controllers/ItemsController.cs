@@ -31,6 +31,7 @@ namespace TindaTrackAPI.Controllers
             {
                 Id = item.Id,
                 Name = item.Name,
+                ItemCode = item.ItemCode,
                 Description = item.Description,
                 UnitPrice = item.UnitPrice
             })
@@ -51,6 +52,7 @@ namespace TindaTrackAPI.Controllers
             {
                 Id = item.Id,
                 Name = item.Name,
+                ItemCode = item.ItemCode,
                 UnitPrice = item.UnitPrice
             };
 

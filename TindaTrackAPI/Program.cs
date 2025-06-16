@@ -13,6 +13,21 @@ builder.Services.AddDbContext<TindaTrackContext>(options =>
     )
 );
 
+// Handle CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:4200"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,5 +55,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowLocalhost");
 
 app.Run();
