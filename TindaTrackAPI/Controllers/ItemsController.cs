@@ -65,6 +65,11 @@ namespace TindaTrackAPI.Controllers
             var item = await _context.Items.FindAsync(id);
             if (item == null) return NotFound();
 
+            if (await ItemCodeExists(dto.ItemCode))
+            {
+                return Conflict(new { message = "ItemCode already exists." });
+            }
+
             item.Name = dto.Name;
             item.UnitPrice = dto.UnitPrice;
             item.ItemCode = dto.ItemCode;
@@ -90,6 +95,11 @@ namespace TindaTrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ItemDto>> PostItem(CreateItemDto dto)
         {
+            if (await ItemCodeExists(dto.ItemCode))
+            {
+                return Conflict(new { message = "ItemCode already exists." });
+            }
+
             var item = new Item
             {
                 Name = dto.Name,
@@ -132,6 +142,11 @@ namespace TindaTrackAPI.Controllers
         private bool ItemExists(int id)
         {
             return _context.Items.Any(e => e.Id == id);
+        }
+
+        private async Task<bool> ItemCodeExists(string itemCode)
+        {
+            return await _context.Items.AnyAsync(i => i.ItemCode == itemCode);
         }
     }
 }

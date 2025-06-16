@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace TindaTrackAPI.Models
 {
+    [Index(nameof(ItemCode), IsUnique = true)]
     public class Item
     {
         public int Id { get; set; }
