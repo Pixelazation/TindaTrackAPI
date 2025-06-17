@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TindaTrackAPI.DTOs.Barangay;
 using TindaTrackAPI.DTOs.Municipality;
 using TindaTrackAPI.Models;
 
@@ -21,7 +22,7 @@ namespace TindaTrackAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Municipalities
+        // GET: api/municipalities
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MunicipalityDto>>> GetMunicipalities()
         {
@@ -34,6 +35,17 @@ namespace TindaTrackAPI.Controllers
             .ToListAsync();
 
             return Ok(municipalities);
+        }
+
+        // GET: api/municipalities/5/barangays
+        [HttpGet("{id}/barangays")]
+        public async Task<ActionResult<IEnumerable<BarangayDto>>> GetBarangays(int id)
+        {
+            var barangays = await _context.Barangays
+            .Where(barangay => barangay.MunicipalityId == id)
+            .ToListAsync();
+
+            return Ok(barangays);
         }
     }
 }
