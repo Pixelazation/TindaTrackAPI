@@ -9,9 +9,6 @@ namespace TindaTrackAPI.DTOs.Purchase
         public int OrderId { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
-
-        [Required]
         public int ItemId { get; set; }
 
         [Required]
