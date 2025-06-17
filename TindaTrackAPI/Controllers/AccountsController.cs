@@ -109,6 +109,11 @@ namespace TindaTrackAPI.Controllers
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
+            account = await _context.Accounts
+            .Include(a => a.Barangay)
+            .ThenInclude(b => b.Municipality)
+            .FirstAsync(a => a.Id == account.Id);
+
             var resultDto = new AccountDto
             {
                 Id = account.Id,

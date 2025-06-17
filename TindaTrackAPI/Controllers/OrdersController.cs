@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Principal;
+using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Order;
 using TindaTrackAPI.Models;
 
@@ -107,6 +108,10 @@ namespace TindaTrackAPI.Controllers
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
+
+            order = await _context.Orders
+            .Include(a => a.Salesman)
+            .FirstAsync(a => a.Id == order.Id);
 
             var resultDto = new OrderDto
             {

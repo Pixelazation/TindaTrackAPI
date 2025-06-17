@@ -114,6 +114,10 @@ namespace TindaTrackAPI.Controllers
             _context.Purchases.Add(purchase);
             await _context.SaveChangesAsync();
 
+            purchase = await _context.Purchases
+            .Include(a => a.Item)
+            .FirstAsync(a => a.Id == purchase.Id);
+
             var resultDto = new PurchaseDto
             {
                 Id = purchase.Id,
