@@ -16,6 +16,7 @@ namespace TindaTrackAPI.Models
         public required int BarangayId { get; set; }
 
         // Navigation
+        public Barangay Barangay { get; set; } = null!;
         public ICollection<Order> Orders { get; set; } = null!;
     }
 }
