@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Order;
+using TindaTrackAPI.DTOs.Purchase;
 using TindaTrackAPI.Models;
 
 namespace TindaTrackAPI.Controllers
@@ -34,6 +36,12 @@ namespace TindaTrackAPI.Controllers
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.TotalSales,
+                Purchases = order.Purchases.Select(p => new PurchaseDto
+                {
+                    ItemName = p.Item.Name,
+                    Quantity = p.Quantity,
+                    UnitPrice = p.UnitPrice
+                }).ToList()
             })
             .ToListAsync();
 
@@ -58,6 +66,12 @@ namespace TindaTrackAPI.Controllers
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.TotalSales,
+                Purchases = order.Purchases.Select(p => new PurchaseDto
+                {
+                    ItemName = p.Item.Name,
+                    Quantity = p.Quantity,
+                    UnitPrice = p.UnitPrice
+                }).ToList()
             };
 
             return Ok(dto);
@@ -74,6 +88,12 @@ namespace TindaTrackAPI.Controllers
             order.AccountId = dto.AccountId;
             order.SalesmanId = dto.SalesmanId;
             order.Date = dto.Date;
+            order.Purchases = dto.Purchases.Select(p => new Purchase
+            {
+                ItemId = p.ItemId,
+                Quantity = p.Quantity,
+                UnitPrice = p.UnitPrice
+            }).ToList();
 
             try
             {
@@ -104,6 +124,12 @@ namespace TindaTrackAPI.Controllers
                 AccountId = dto.AccountId,
                 SalesmanId = dto.SalesmanId,
                 Date = dto.Date,
+                Purchases = dto.Purchases.Select(p => new Purchase
+                {
+                    ItemId = p.ItemId,
+                    Quantity = p.Quantity,
+                    UnitPrice = p.UnitPrice
+                }).ToList()
             };
 
             _context.Orders.Add(order);
@@ -111,6 +137,7 @@ namespace TindaTrackAPI.Controllers
 
             order = await _context.Orders
             .Include(a => a.Salesman)
+            .Include(a => a.Purchases)
             .FirstAsync(a => a.Id == order.Id);
 
             var resultDto = new OrderDto
@@ -120,9 +147,15 @@ namespace TindaTrackAPI.Controllers
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.TotalSales,
+                Purchases = order.Purchases.Select(p => new PurchaseDto
+                {
+                    ItemName = p.Item.Name,
+                    Quantity = p.Quantity,
+                    UnitPrice = p.UnitPrice
+                }).ToList()
             };
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            return CreatedAtAction("GetOrder", new { id = order.Id }, resultDto);
         }
 
         // DELETE: api/orders/5

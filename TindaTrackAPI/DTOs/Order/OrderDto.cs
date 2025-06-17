@@ -1,4 +1,5 @@
-﻿using TindaTrackAPI.Models;
+﻿using TindaTrackAPI.DTOs.Purchase;
+using TindaTrackAPI.Models;
 
 namespace TindaTrackAPI.DTOs.Order
 {
@@ -9,5 +10,6 @@ namespace TindaTrackAPI.DTOs.Order
         public string SalesmanName { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public decimal TotalSales { get; set; }
+        public List<PurchaseDto> Purchases { get; set; } = default!; 
     }
 }
