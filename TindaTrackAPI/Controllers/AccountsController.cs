@@ -97,7 +97,7 @@ namespace TindaTrackAPI.Controllers
         // POST: api/Accounts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Account>> PostAccount(CreateAccountDto dto)
+        public async Task<ActionResult<AccountDto>> PostAccount(CreateAccountDto dto)
         {
             var account = new Account
             {
