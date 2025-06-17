@@ -16,7 +16,7 @@ namespace TindaTrackAPI.Models
 
         public Municipality Municipality { get; set; } = null!;
 
-        public ICollection<Sale> Sales { get; set; } = null!;
+        public ICollection<Account> Accounts { get; set; } = null!;
     }
 
 }

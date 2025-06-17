@@ -1,20 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace TindaTrackAPI.Models
 {
-    public class Salesman
+    public class Account
     {
         public int Id { get; set; }
 
         [Required]
-        public required string FirstName { get; set; }
+        public required string Name { get; set; }
 
         [Required]
-        public required string LastName { get; set; }
+        public required string Address { get; set; }
+
+        [Required]
+        public required int BarangayId { get; set; }
 
         // Navigation
         public ICollection<Order> Orders { get; set; } = null!;
     }
-
 }

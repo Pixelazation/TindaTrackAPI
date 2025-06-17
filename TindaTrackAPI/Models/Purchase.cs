@@ -3,18 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TindaTrackAPI.Models
 {
-    public class Sale
+    public class Purchase
     {
         public int Id { get; set; }
 
         [Required]
-        public int SalesmanId { get; set; }
+        public int OrderId { get; set; }
 
         [Required]
         public int ItemId { get; set; }
-
-        [Required]
-        public DateTime Date { get; set; }
 
         [Required]
         public int Quantity { get; set; }  // stored in pcs
@@ -26,12 +23,7 @@ namespace TindaTrackAPI.Models
 
         public decimal TotalAmount => Quantity * UnitPrice;
 
-        [Required]
-        public int BarangayId { get; set; }
-
         // Navigation properties
-        public Salesman Salesman { get; set; } = null!;
         public Item Item { get; set; } = null!;
-        public Barangay Barangay { get; set; } = null!;
     }
 }
