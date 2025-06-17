@@ -7,7 +7,7 @@ namespace TindaTrackAPI.Models
         public int Id { get; set; }
 
         [Required]
-        public int AccountId { get; set;  }
+        public int AccountId { get; set; }
 
         [Required]
         public int SalesmanId { get; set; }
@@ -18,6 +18,8 @@ namespace TindaTrackAPI.Models
         public decimal TotalSales => Purchases.Sum(p => p.TotalAmount);
 
         // Navigation
+        public Account Account { get; set; } = null!;
+        public Salesman Salesman { get; set; } = null!;
         public ICollection<Purchase> Purchases { get; set; } = null!;
     }
 }
