@@ -87,11 +87,6 @@ namespace TindaTrackAPI.Controllers
             var item = await _context.Items.FindAsync(id);
             if (item == null) return NotFound();
 
-            if (await ItemCodeExists(dto.ItemCode))
-            {
-                return Conflict(new { message = "ItemCode already exists." });
-            }
-
             item.Name = dto.Name;
             item.UnitPrice = dto.UnitPrice;
             item.ItemCode = dto.ItemCode;
