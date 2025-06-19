@@ -5,10 +5,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.DTOs.Salesman;
 using TindaTrackAPI.Models;
+using TindaTrackAPI.Utils;
 
 namespace TindaTrackAPI.Controllers
 {
@@ -25,18 +27,49 @@ namespace TindaTrackAPI.Controllers
 
         // GET: api/Salesmen
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<SalesmanDto>>> GetSalesmen()
+        public async Task<ActionResult<IEnumerable<SalesmanDto>>> GetSalesmen
+        (
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            [FromQuery] string? searchQuery,
+            [FromQuery] string? filter
+        )
         {
-            var salesmen = await _context.Salesmen
+            var salesmen = _context.Salesmen
             .Select(salesman => new SalesmanDto
             {
                 Id = salesman.Id,
                 FirstName = salesman.FirstName,
                 LastName = salesman.LastName
-            })
-            .ToListAsync();
+            });
 
-            return Ok(salesmen);
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    filter = StringUtils.ToPascalCase(filter);
+                    salesmen = salesmen.Where($"{filter}.Contains(@0)", searchQuery);
+                }
+                else
+                {
+                    string lowerSearch = searchQuery.ToLower();
+
+                    salesmen = salesmen.Where(salesman =>
+                        salesman.FirstName.ToLower().Contains(lowerSearch) ||
+                        salesman.LastName.ToLower().Contains(lowerSearch)
+                    );
+                }
+            }
+
+            if (page != null && pageSize != null)
+            {
+                var position = (page.Value - 1) * pageSize.Value;
+                salesmen = salesmen.Skip(position).Take(pageSize.Value);
+            }
+
+            var result = await salesmen.ToListAsync();
+
+            return Ok(result);
         }
 
         // GET: api/Salesmen/5

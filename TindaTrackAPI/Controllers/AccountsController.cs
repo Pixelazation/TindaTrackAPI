@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Account;
 using TindaTrackAPI.Models;
+using TindaTrackAPI.Utils;
 
 namespace TindaTrackAPI.Controllers
 {
@@ -24,9 +26,15 @@ namespace TindaTrackAPI.Controllers
 
         // GET: api/Accounts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<AccountDto>>> GetAccounts
+        (
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            [FromQuery] string? searchQuery,
+            [FromQuery] string? filter
+        )
         {
-            var account = await _context.Accounts
+            var accounts = _context.Accounts
             .Select(account => new AccountDto
             {
                 Id = account.Id,
@@ -34,10 +42,37 @@ namespace TindaTrackAPI.Controllers
                 Address = account.Address,
                 BarangayName = account.Barangay.Name,
                 MunicipalityName = account.Barangay.Municipality.Name
-            })
-            .ToListAsync();
+            });
 
-            return Ok(account);
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    filter = StringUtils.ToPascalCase(filter);
+                    accounts = accounts.Where($"{filter}.Contains(@0)", searchQuery);
+                }
+                else
+                {
+                    string lowerSearch = searchQuery.ToLower();
+
+                    accounts = accounts.Where(account =>
+                        account.Name.ToLower().Contains(lowerSearch) ||
+                        account.Address.ToLower().Contains(lowerSearch) ||
+                        account.BarangayName.ToLower().Contains(lowerSearch) ||
+                        account.MunicipalityName.ToLower().Contains(lowerSearch)
+                    );
+                }
+            }
+
+            if (page != null && pageSize != null)
+            {
+                var position = (page.Value - 1) * pageSize.Value;
+                accounts = accounts.Skip(position).Take(pageSize.Value);
+            }
+
+            var result = await accounts.ToListAsync();
+
+            return Ok(result);
         }
 
         // GET: api/Accounts/5
