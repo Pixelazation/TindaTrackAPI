@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.Models;
 using TindaTrackAPI.Utils;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TindaTrackAPI.Controllers
 {
@@ -44,9 +45,23 @@ namespace TindaTrackAPI.Controllers
                 UnitPrice = item.UnitPrice
             });
 
-            if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(filter)) {
-                filter = StringUtils.ToPascalCase(filter);
-                items = items.Where($"{filter}.Contains(@0)", searchQuery);
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                {
+                    filter = StringUtils.ToPascalCase(filter);
+                    items = items.Where($"{filter}.Contains(@0)", searchQuery);
+                }
+                else
+                {
+                    string lowerSearch = searchQuery.ToLower();
+
+                    items = items.Where(item =>
+                        item.Name.ToLower().Contains(lowerSearch) ||
+                        item.ItemCode.ToLower().Contains(lowerSearch) ||
+                        item.Description != null && item.Description.ToLower().Contains(lowerSearch)
+                    );
+                }  
             }
 
             if (page != null && pageSize != null)
