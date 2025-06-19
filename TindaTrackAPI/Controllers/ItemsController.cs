@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.Models;
+using TindaTrackAPI.Utils;
 
 namespace TindaTrackAPI.Controllers
 {
@@ -24,9 +26,15 @@ namespace TindaTrackAPI.Controllers
 
         // GET: api/Items
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemDto>>> GetItems()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> GetItems
+        (
+            [FromQuery] int? page,
+            [FromQuery] int? pageSize,
+            [FromQuery] string? searchQuery,
+            [FromQuery] string? filter
+        )
         {
-            var items = await _context.Items
+            var items = _context.Items
             .Select(item => new ItemDto
             {
                 Id = item.Id,
@@ -34,10 +42,22 @@ namespace TindaTrackAPI.Controllers
                 ItemCode = item.ItemCode,
                 Description = item.Description,
                 UnitPrice = item.UnitPrice
-            })
-            .ToListAsync();
+            });
 
-            return Ok(items);
+            if (!string.IsNullOrEmpty(searchQuery) && !string.IsNullOrEmpty(filter)) {
+                filter = StringUtils.ToPascalCase(filter);
+                items = items.Where($"{filter}.Contains(@0)", searchQuery);
+            }
+
+            if (page != null && pageSize != null)
+            {
+                var position = (page.Value - 1) * pageSize.Value;
+                items = items.Skip(position).Take(pageSize.Value);
+            }
+
+            var result = await items.ToListAsync();
+
+            return Ok(result);
         }
 
         // GET: api/Items/5
