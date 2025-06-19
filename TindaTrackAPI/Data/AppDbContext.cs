@@ -13,4 +13,14 @@ public class TindaTrackContext : DbContext
     public DbSet<Item> Items { get; set; }
     public DbSet<Barangay> Barangays { get; set; }
     public DbSet<Municipality> Municipalities { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Setup cascade delete from Order to Purchases
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.Purchases)
+            .WithOne(p => p.Order)
+            .HasForeignKey(p => p.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

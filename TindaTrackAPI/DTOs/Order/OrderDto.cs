@@ -10,6 +10,5 @@ namespace TindaTrackAPI.DTOs.Order
         public string SalesmanName { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public decimal TotalSales { get; set; }
-        public List<PurchaseDto> Purchases { get; set; } = default!; 
     }
 }

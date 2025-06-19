@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.DTOs.Purchase;
 using TindaTrackAPI.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -32,7 +33,14 @@ namespace TindaTrackAPI.Controllers
             {
                 Id = purchase.Id,
                 OrderId = purchase.OrderId,
-                ItemName = purchase.Item.Name,
+                Item =
+                {
+                    Id = purchase.Item.Id,
+                    ItemCode = purchase.Item.ItemCode,
+                    Name = purchase.Item.Name,
+                    Description = purchase.Item.Description,
+                    UnitPrice = purchase.Item.UnitPrice,
+                },
                 Quantity = purchase.Quantity,
                 UnitPrice = purchase.UnitPrice,
                 TotalAmount = purchase.TotalAmount,
@@ -46,7 +54,9 @@ namespace TindaTrackAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<PurchaseDto>> GetPurchase(int id)
         {
-            var purchase = await _context.Purchases.FindAsync(id);
+            var purchase = await _context.Purchases
+                .Include(p => p.Item)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (purchase == null)
             {
@@ -57,7 +67,14 @@ namespace TindaTrackAPI.Controllers
             {
                 Id = purchase.Id,
                 OrderId = purchase.OrderId,
-                ItemName = purchase.Item.Name,
+                Item =
+                {
+                    Id = purchase.Item.Id,
+                    ItemCode = purchase.Item.ItemCode,
+                    Name = purchase.Item.Name,
+                    Description = purchase.Item.Description,
+                    UnitPrice = purchase.Item.UnitPrice,
+                },
                 Quantity = purchase.Quantity,
                 UnitPrice = purchase.UnitPrice,
                 TotalAmount = purchase.TotalAmount,
@@ -122,7 +139,14 @@ namespace TindaTrackAPI.Controllers
             {
                 Id = purchase.Id,
                 OrderId = purchase.OrderId,
-                ItemName = purchase.Item.Name,
+                Item = new ItemDto
+                {
+                    Id = purchase.Item.Id,
+                    ItemCode = purchase.Item.ItemCode,
+                    Name = purchase.Item.Name,
+                    Description = purchase.Item.Description,
+                    UnitPrice = purchase.Item.UnitPrice
+                },
                 Quantity = purchase.Quantity,
                 UnitPrice = purchase.UnitPrice,
             };

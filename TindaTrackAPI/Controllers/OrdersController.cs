@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using TindaTrackAPI.DTOs.Item;
 using TindaTrackAPI.DTOs.Order;
 using TindaTrackAPI.DTOs.Purchase;
 using TindaTrackAPI.Models;
@@ -35,13 +36,7 @@ namespace TindaTrackAPI.Controllers
                 AccountName = order.Account.Name,
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
-                TotalSales = order.TotalSales,
-                Purchases = order.Purchases.Select(p => new PurchaseDto
-                {
-                    ItemName = p.Item.Name,
-                    Quantity = p.Quantity,
-                    UnitPrice = p.UnitPrice
-                }).ToList()
+                TotalSales = order.Purchases.Sum(p => p.Quantity * p.UnitPrice)
             })
             .ToListAsync();
 
@@ -52,7 +47,11 @@ namespace TindaTrackAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDto>> GetOrder(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .Include(o => o.Account)
+                .Include(o => o.Salesman)
+                .Include(o => o.Purchases)
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
             {
@@ -65,17 +64,44 @@ namespace TindaTrackAPI.Controllers
                 AccountName = order.Account.Name,
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
-                TotalSales = order.TotalSales,
-                Purchases = order.Purchases.Select(p => new PurchaseDto
-                {
-                    ItemName = p.Item.Name,
-                    Quantity = p.Quantity,
-                    UnitPrice = p.UnitPrice
-                }).ToList()
+                TotalSales = order.Purchases.Sum(p => p.Quantity * p.UnitPrice)
             };
 
             return Ok(dto);
         }
+
+        // GET: api/orders/{id}/purchases
+        [HttpGet("{id}/purchases")]
+        public async Task<ActionResult<IEnumerable<PurchaseDto>>> GetOrderPurchases(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Purchases)
+                    .ThenInclude(p => p.Item)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            var purchases = order.Purchases.Select(p => new PurchaseDto
+            {
+                Item = new ItemDto
+                {
+                    Id = p.Item.Id,
+                    ItemCode = p.Item.ItemCode,
+                    Name = p.Item.Name,
+                    Description = p.Item.Description,
+                    UnitPrice = p.Item.UnitPrice
+                },
+                Quantity = p.Quantity,
+                UnitPrice = p.UnitPrice,
+                TotalAmount = p.TotalAmount
+            }).ToList();
+
+            return Ok(purchases);
+        }
+
 
         // PUT: api/orders/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -88,11 +114,14 @@ namespace TindaTrackAPI.Controllers
             order.AccountId = dto.AccountId;
             order.SalesmanId = dto.SalesmanId;
             order.Date = dto.Date;
+
+            _context.Purchases.RemoveRange(order.Purchases);
+
             order.Purchases = dto.Purchases.Select(p => new Purchase
             {
                 ItemId = p.ItemId,
                 Quantity = p.Quantity,
-                UnitPrice = p.UnitPrice
+                UnitPrice = p.UnitPrice,
             }).ToList();
 
             try
@@ -138,6 +167,7 @@ namespace TindaTrackAPI.Controllers
             order = await _context.Orders
             .Include(a => a.Salesman)
             .Include(a => a.Purchases)
+            .Include(a => a.Account)
             .FirstAsync(a => a.Id == order.Id);
 
             var resultDto = new OrderDto
@@ -147,12 +177,6 @@ namespace TindaTrackAPI.Controllers
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.TotalSales,
-                Purchases = order.Purchases.Select(p => new PurchaseDto
-                {
-                    ItemName = p.Item.Name,
-                    Quantity = p.Quantity,
-                    UnitPrice = p.UnitPrice
-                }).ToList()
             };
 
             return CreatedAtAction("GetOrder", new { id = order.Id }, resultDto);

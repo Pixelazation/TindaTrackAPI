@@ -25,5 +25,6 @@ namespace TindaTrackAPI.Models
 
         // Navigation properties
         public Item Item { get; set; } = null!;
+        public Order Order { get; set; } = null!;
     }
 }

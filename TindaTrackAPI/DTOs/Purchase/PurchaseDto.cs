@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using TindaTrackAPI.DTOs.Item;
 
 namespace TindaTrackAPI.DTOs.Purchase
 {
@@ -7,7 +8,7 @@ namespace TindaTrackAPI.DTOs.Purchase
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-        public string ItemName { get; set; } = string.Empty;
+        public ItemDto Item { get; set; } = default!;
         public int Quantity { get; set; }  // stored in pcs
         public decimal UnitPrice { get; set; }
         public decimal TotalAmount { get; set; }

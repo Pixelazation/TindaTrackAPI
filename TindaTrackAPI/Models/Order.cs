@@ -15,7 +15,7 @@ namespace TindaTrackAPI.Models
         [Required]
         public DateTime Date { get; set; }
 
-        public decimal TotalSales => Purchases.Sum(p => p.TotalAmount);
+        public decimal TotalSales => Purchases?.Sum(p => p.TotalAmount) ?? 0;
 
         // Navigation
         public Account Account { get; set; } = null!;
