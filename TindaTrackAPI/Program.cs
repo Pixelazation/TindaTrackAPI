@@ -3,6 +3,12 @@ using TindaTrackAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>() // <-- THIS is required for `dotnet user-secrets`
+    .AddEnvironmentVariables();
+
 // Add services to the container.
 
 builder.Services.AddControllers(options =>
@@ -15,10 +21,14 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
 });
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine(connectionString);
+
 builder.Services.AddDbContext<TindaTrackContext>(options =>
     options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+        connectionString,
+        ServerVersion.AutoDetect(connectionString)
     )
 );
 
