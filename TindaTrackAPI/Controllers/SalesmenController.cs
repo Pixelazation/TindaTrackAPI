@@ -56,7 +56,8 @@ namespace TindaTrackAPI.Controllers
 
                     salesmen = salesmen.Where(salesman =>
                         salesman.FirstName.ToLower().Contains(lowerSearch) ||
-                        salesman.LastName.ToLower().Contains(lowerSearch)
+                        salesman.LastName.ToLower().Contains(lowerSearch) ||
+                        (salesman.FirstName + " " + salesman.LastName).ToLower().Contains(lowerSearch)
                     );
                 }
             }
