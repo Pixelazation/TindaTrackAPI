@@ -33,7 +33,9 @@ namespace TindaTrackAPI.Controllers
             .Select(order => new OrderDto
             {
                 Id = order.Id,
+                AccountId = order.AccountId,
                 AccountName = order.Account.Name,
+                SalesmanId = order.SalesmanId,
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.Purchases.Sum(p => p.Quantity * p.UnitPrice)
@@ -61,7 +63,9 @@ namespace TindaTrackAPI.Controllers
             var dto = new OrderDto
             {
                 Id = order.Id,
+                AccountId = order.AccountId,
                 AccountName = order.Account.Name,
+                SalesmanId = order.SalesmanId,
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
                 TotalSales = order.Purchases.Sum(p => p.Quantity * p.UnitPrice)
@@ -108,7 +112,10 @@ namespace TindaTrackAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutOrder(int id, CreateOrderDTO dto)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+            .Include(o => o.Purchases)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
             if (order == null) return NotFound();
 
             order.AccountId = dto.AccountId;
@@ -119,6 +126,7 @@ namespace TindaTrackAPI.Controllers
 
             order.Purchases = dto.Purchases.Select(p => new Purchase
             {
+
                 ItemId = p.ItemId,
                 Quantity = p.Quantity,
                 UnitPrice = p.UnitPrice,
@@ -173,10 +181,12 @@ namespace TindaTrackAPI.Controllers
             var resultDto = new OrderDto
             {
                 Id = order.Id,
+                AccountId = order.AccountId,
                 AccountName = order.Account.Name,
+                SalesmanId = order.SalesmanId,
                 SalesmanName = $"{order.Salesman.FirstName} {order.Salesman.LastName}",
                 Date = order.Date,
-                TotalSales = order.TotalSales,
+                TotalSales = order.Purchases.Sum(p => p.Quantity * p.UnitPrice)
             };
 
             return CreatedAtAction("GetOrder", new { id = order.Id }, resultDto);
